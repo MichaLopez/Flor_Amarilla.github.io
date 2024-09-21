@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flor Amarilla con Música</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: black;
+            flex-direction: column;
+            color: white; /* Para que el texto sea visible en el fondo negro */
+        }
+        canvas {
+            background-color: black;
+            display: none; /* Ocultar el canvas inicialmente */
+            position: relative; /* Para posicionar el texto sobre el canvas */
+        }
+        #mensaje {
+            text-align: center; /* Centrar el texto */
+        }
+        #textoTeQuiero {
+            position: absolute;
+            top: 20%; /* Ajustar para que esté arriba de la flor */
+            left: 50%; /* Centrar horizontalmente */
+            transform: translate(-50%, -50%); /* Ajustar para centrar el texto */
+            font-size: 3em; /* Tamaño del texto */
+            color: yellow; /* Color del texto */
+            text-shadow: 2px 2px 5px black; /* Sombra para un efecto decorativo */
+            display: none; /* Ocultar el texto inicialmente */
+        }
+    </style>
+</head>
+<body>
+
+<div id="mensaje">
+    <p>Me gustaría pasar el resto de mis días con alguien que no me necesite para nada, pero me quiera para todo.<br>
+    Mario Benedetti</p>
+    <button id="continuarBtn">Me quieres para todo?</button>
+</div>
+
+<canvas id="florCanvas" width="600" height="600"></canvas>
+
+<!-- Reproductor de audio sin controles -->
+<audio id="audio" src="audio.mp3" type="audio/mp3"></audio>
+
+<div id="textoTeQuiero">Te quiero</div>
+
+<script>
+    document.getElementById('continuarBtn').addEventListener('click', function() {
+        document.getElementById('mensaje').style.display = 'none'; // Ocultar el mensaje
+        document.getElementById('florCanvas').style.display = 'block'; // Mostrar el canvas
+        document.getElementById('textoTeQuiero').style.display = 'block'; // Mostrar el texto "Te quiero"
+        document.getElementById('audio').play(); // Reproducir el audio
+        dibujarFlorCompleja(); // Llamar a la función para dibujar la flor
+    });
+
+    function dibujarFlorCompleja() {
+        const canvas = document.getElementById('florCanvas');
+        const ctx = canvas.getContext('2d');
+        const centroX = canvas.width / 2;
+        const centroY = canvas.height / 2;
+
+        function dibujarPetalo(x, y, radioX, radioY, angulo, color) {
+            ctx.beginPath();
+            ctx.ellipse(x, y, radioX, radioY, angulo, 0, 2 * Math.PI);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.strokeStyle = 'black';
+            ctx.stroke();
+        }
+
+        function dibujarCapa(numPetalos, radioPetalos, escala, desplazamiento, colorBase) {
+            for (let i = 0; i < numPetalos; i++) {
+                const angulo = (i * 2 * Math.PI) / numPetalos;
+                const x = centroX + Math.cos(angulo) * desplazamiento;
+                const y = centroY + Math.sin(angulo) * desplazamiento;
+
+                const gradiente = ctx.createRadialGradient(x, y, 0, x, y, radioPetalos);
+                gradiente.addColorStop(0, colorBase);
+                gradiente.addColorStop(1, 'black');
+
+                dibujarPetalo(x, y, radioPetalos * escala, radioPetalos * escala * 0.6, angulo, gradiente);
+            }
+        }
+
+        dibujarCapa(12, 90, 1, 0, 'yellow');
+        dibujarCapa(12, 70, 0.8, 30, 'yellow');
+        dibujarCapa(12, 50, 0.6, 60, 'yellow');
+        dibujarCapa(12, 30, 0.4, 90, 'yellow');
+        dibujarCapa(12, 15, 0.2, 120, 'yellow');
+
+        ctx.beginPath();
+        ctx.arc(centroX, centroY, 10, 0, 2 * Math.PI);
+        ctx.fillStyle = 'black';
+        ctx.fill();
+    }
+</script>
+
+</body>
+</html>
